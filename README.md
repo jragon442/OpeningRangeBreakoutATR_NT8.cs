@@ -1,14 +1,12 @@
 # OpeningRangeBreakoutATR_NT8.cs
 Opening Range Breakout indicator that marks the 9:30–9:45 ET high/low, then triggers a buy when price breaks above the range during 10:30–15:30 ET. Entry occurs at the next bar open. ATR-based stop loss and take profit are plotted dynamically. Designed to run on NinZaRenko charts (ID 12345).
-OpeningRangeBreakoutATR_NT8.txt
 #region Using declarations
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Xml.Serialization;
 using System.Windows.Media;
+using System.Xml.Serialization;
 using NinjaTrader.Data;
-using NinjaTrader.Gui.Tools;
 using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.DrawingTools;
 using NinjaTrader.NinjaScript.Indicators;
@@ -16,7 +14,7 @@ using NinjaTrader.NinjaScript.Indicators;
 
 namespace NinjaTrader.NinjaScript.Indicators
 {
-    public class OpeningRangeBreakoutATR_NT8 : Indicator
+    public class OpeningRangeBreakoutATR : Indicator
     {
         private const int OpeningRangeSeriesBip = 1;
 
@@ -38,14 +36,14 @@ namespace NinjaTrader.NinjaScript.Indicators
         {
             if (State == State.SetDefaults)
             {
-                Name        = "OpeningRangeBreakoutATR_NT8";
-                Description = "Opening Range Breakout with ATR-based stop loss/take profit. Designed to plot on a 35/4 NinZaRenko chart while using a 1-minute series for the 9:30-9:45 ET opening range by default.";
+                Name        = "OpeningRangeBreakoutATR";
+                Description = "Opening Range Breakout with ATR-based stop loss/take profit. Designed to plot on a NinZaRenko chart while using a 1-minute series for the 9:30-9:45 ET opening range by default.";
 
-                Calculate               = Calculate.OnEachTick;
-                IsOverlay               = true;
-                DrawOnPricePanel        = true;
-                DisplayInDataBox        = true;
-                PaintPriceMarkers       = true;
+                Calculate                = Calculate.OnEachTick;
+                IsOverlay                = true;
+                DrawOnPricePanel         = true;
+                DisplayInDataBox         = true;
+                PaintPriceMarkers        = true;
                 IsSuspendedWhileInactive = true;
 
                 StartHour   = 9;
@@ -63,15 +61,24 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 Use1MinuteSeriesForOpeningRange = true;
 
-                AddPlot(new Stroke(Brushes.Red, 2), PlotStyle.Line, "OpeningRangeHigh");
-                AddPlot(new Stroke(Brushes.Blue, 2), PlotStyle.Line, "OpeningRangeLow");
-                AddPlot(new Stroke(Brushes.Red, 1), PlotStyle.Line, "StopLoss");
-                AddPlot(new Stroke(Brushes.LimeGreen, 1), PlotStyle.Line, "TakeProfit");
+                AddPlot(Brushes.Red,       "OpeningRangeHigh");
+                AddPlot(Brushes.Blue,      "OpeningRangeLow");
+                AddPlot(Brushes.Red,       "StopLoss");
+                AddPlot(Brushes.LimeGreen, "TakeProfit");
+
+                Plots[0].PlotStyle = PlotStyle.Line;
+                Plots[0].Width     = 2;
+                Plots[1].PlotStyle = PlotStyle.Line;
+                Plots[1].Width     = 2;
+                Plots[2].PlotStyle = PlotStyle.Line;
+                Plots[2].Width     = 1;
+                Plots[3].PlotStyle = PlotStyle.Line;
+                Plots[3].Width     = 1;
             }
             else if (State == State.Configure)
             {
                 // Secondary 1-minute series used to build the 9:30-9:45 ET opening range
-                // so the OR levels match the actual cash-session opening candle range while
+                // so the OR levels match the actual cash-session opening range while
                 // still plotting on the primary NinZaRenko chart price scale.
                 AddDataSeries(BarsPeriodType.Minute, 1);
             }
@@ -140,9 +147,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                 && Close[2] < openingRangeHigh
                 && Close[1] > openingRangeHigh)
             {
-                inTrade       = true;
+                inTrade         = true;
                 enteredThisCall = true;
-                entryPrice    = Open[0];
+                entryPrice      = Open[0];
 
                 double atrValue = atrPrimary[1];
                 stopLossLevel   = entryPrice - (AtrMultiplier * atrValue);
@@ -195,7 +202,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (!Use1MinuteSeriesForOpeningRange)
                 return;
 
-            DateTime minuteTimeEt = ToEastern(Time[0]);
+            DateTime minuteTimeEt = ToEastern(Times[OpeningRangeSeriesBip][0]);
             EnsureDateReset(minuteTimeEt);
 
             // NinjaTrader minute bars are end-stamped. For a 9:30-9:45 ET opening range,
@@ -241,17 +248,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private bool IsWithinWindowInclusive(DateTime timeEt, int startHour, int startMinute, int endHour, int endMinute)
         {
-            int current = ToTime(timeEt);
-            int start   = startHour * 10000 + startMinute * 100;
-            int end     = endHour * 10000 + endMinute * 100;
+            int current = timeEt.Hour * 100 + timeEt.Minute;
+            int start   = startHour * 100 + startMinute;
+            int end     = endHour * 100 + endMinute;
             return current >= start && current <= end;
         }
 
         private bool IsWithinWindowEndStamped(DateTime timeEt, int startHour, int startMinute, int endHour, int endMinute)
         {
-            int current = ToTime(timeEt);
-            int start   = startHour * 10000 + startMinute * 100;
-            int end     = endHour * 10000 + endMinute * 100;
+            int current = timeEt.Hour * 100 + timeEt.Minute;
+            int start   = startHour * 100 + startMinute;
+            int end     = endHour * 100 + endMinute;
             return current > start && current <= end;
         }
 
