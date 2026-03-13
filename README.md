@@ -1,5 +1,32 @@
 # OpeningRangeBreakoutATR_NT8.cs
 Opening Range Breakout indicator that marks the 9:30–9:45 ET high/low, then triggers a buy when price breaks above the range during 10:30–15:30 ET. Entry occurs at the next bar open. ATR-based stop loss and take profit are plotted dynamically. Designed to run on NinZaRenko charts (ID 12345).
+
+---
+
+## Top 3 NT8 Indicator Repositories for Futures on GitHub
+
+Based on star count across public GitHub repositories, here are the top 3 NinjaTrader 8 (NT8) indicator projects relevant to futures markets:
+
+### 1. [trading-code/ninjatrader-freeorderflow](https://github.com/trading-code/ninjatrader-freeorderflow) ⭐ 130
+**Free Order Flow indicators for NinjaTrader 8**
+A comprehensive suite of free order flow / footprint-style indicators built specifically for futures trading on NinjaTrader 8. Includes volume profile, delta, and cumulative delta tools that are widely used for reading order flow in futures markets (ES, NQ, CL, etc.).
+- **Language:** C#  
+- **License:** MIT  
+- **Topics:** `futures` `ninjatrader` `ninjatrader-8` `order-flow` `trading`
+
+### 2. [TradeFab/Ninjatrader8.public](https://github.com/TradeFab/Ninjatrader8.public) ⭐ 8
+**NinjaTrader 8 indicators and strategies**
+A collection of open-source indicators and automated strategies for NinjaTrader 8, covering momentum, volatility, and price action setups suitable for futures and equities markets.
+- **Language:** C#
+
+### 3. [lunarticktrading/NinjaTrader8](https://github.com/lunarticktrading/NinjaTrader8) ⭐ 8
+**Indicators and strategies for NinjaTrader 8**
+A growing repository of NinjaTrader 8 NinjaScript indicators and strategies aimed at futures day traders, including entry/exit signal tools and market structure indicators.
+- **Language:** C#
+
+---
+
+> **Note:** Star counts reflect GitHub data as of March 2026. The ranking may shift as the community grows.
 OpeningRangeBreakoutATR_NT8.txt
 #region Using declarations
 using System;
