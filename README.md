@@ -169,8 +169,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     sellSignalSeries[1] = 1.0;
                     Draw.Text(this, $"SellSL_{CurrentBar}", "Sell (SL)", 1, High[1] + (2 * TickSize), Brushes.Red);
                 }
-
-                if (Close[1] >= takeProfitLevel)
+                else if (Close[1] >= takeProfitLevel)
                 {
                     inTrade = false;
                     sellSignalSeries[1] = 1.0;
@@ -229,7 +228,11 @@ namespace NinjaTrader.NinjaScript.Indicators
                 currentEtDate    = etTime.Date;
                 openingRangeHigh = double.NaN;
                 openingRangeLow  = double.NaN;
-                // Source logic does not force a daily trade-state reset, so that is intentionally unchanged.
+                // Reset trade state so a position from the previous session never carries into the new day.
+                inTrade       = false;
+                entryPrice    = 0;
+                stopLossLevel = 0;
+                takeProfitLevel = 0;
             }
         }
 
@@ -241,17 +244,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private bool IsWithinWindowInclusive(DateTime timeEt, int startHour, int startMinute, int endHour, int endMinute)
         {
-            int current = ToTime(timeEt);
-            int start   = startHour * 10000 + startMinute * 100;
-            int end     = endHour * 10000 + endMinute * 100;
+            int current = timeEt.Hour * 100 + timeEt.Minute;
+            int start   = startHour * 100 + startMinute;
+            int end     = endHour * 100 + endMinute;
             return current >= start && current <= end;
         }
 
         private bool IsWithinWindowEndStamped(DateTime timeEt, int startHour, int startMinute, int endHour, int endMinute)
         {
-            int current = ToTime(timeEt);
-            int start   = startHour * 10000 + startMinute * 100;
-            int end     = endHour * 10000 + endMinute * 100;
+            int current = timeEt.Hour * 100 + timeEt.Minute;
+            int start   = startHour * 100 + startMinute;
+            int end     = endHour * 100 + endMinute;
             return current > start && current <= end;
         }
 
